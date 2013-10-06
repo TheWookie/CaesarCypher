@@ -13,7 +13,7 @@ Operators = {  # Setup Opperators and their priorities. P-lease E-xcuse M-y D-ea
              "/" : 1,
              "%" : 1,
              "^" : 2,
-             "(" : 3, #Turns out we definitely need paren here for comparisons against operators.
+             "(" : 3,  # Turns out we definitely need paren here for comparisons against operators.
              ")" : 3 
 }
 
@@ -63,7 +63,7 @@ def InfixToPostfix(EquationString):
                 print("Popping and ditching {0}, because we don't need it anymore.".format(Stk[len(Stk) - 1]))
                 Stk.pop()  # ditch the left paren
                 continue
-        print("How did I even get here??")# If we reach this line, something has probably gone wrong. http://www.youtube.com/watch?v=Q5cEAhjcv54
+        print("How did I even get here??")  # If we reach this line, something has probably gone wrong. http://www.youtube.com/watch?v=Q5cEAhjcv54
     while len(Stk) > 0:
         Q.append(Stk.pop())
     return Q
