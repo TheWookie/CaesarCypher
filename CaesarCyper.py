@@ -84,7 +84,7 @@ def ParseRPN(RpnArr, PValue):
             elif (RpnArr[i] == "%"):
                 ParseStk.append(B % A)
             elif (RpnArr[i] == "^"):
-                ParseStk.append(A ** B)  # This MUST be in reverse order to perform correctly
+                ParseStk.append(B ** A)
     return ParseStk[0]
 
 def CaesarCypher(message, infix):
