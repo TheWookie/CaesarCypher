@@ -4,11 +4,6 @@ Created on Oct 5, 2013
 @author: Paul
 '''
 import re
-import sys
-
-DEBUGMODEON = False
-if (sys.gettrace()):  # this little debug diddy comes from here: http://stackoverflow.com/questions/333995/how-to-detect-that-python-code-is-being-executed-through-the-debugger
-    DEBUGMODEON = True
 
 Alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 Operators = {  # Setup Opperators and their priorities. P-lease E-xcuse M-y D-ear A-unt S-ally
@@ -22,8 +17,6 @@ Operators = {  # Setup Opperators and their priorities. P-lease E-xcuse M-y D-ea
              ")" :-1  # to allow for checking the stack order correctly. This is because Paren are not actually operators BUT we have to check against them in our stack. This does not cause any problems because we already have a separate case for handling paren, even though they both use the same stack.
 }
 
-DEBUGPOSTFIX = False
-
 def InfixToPostfix(EquationString):
     EquationString = EquationString.upper()
     EquationString = re.sub("(MOD)", "%", EquationString)
@@ -34,9 +27,6 @@ def InfixToPostfix(EquationString):
     # ^([\+\*-\/\^%]) #Opperator at beggining of string regex
     # ^([\(\)]) #matchs oppening and closing paren.
     while len(EquationString) > 0:
-        if (DEBUGMODEON and DEBUGPOSTFIX):
-            print("\"{0}\"".format(EquationString))
-            print("New iteration. Sanity check-\t\tQueue: {}, Stack: {}".format(Q, Stk))
         DigitSearch = re.search(r"^(\d+|P)", EquationString)  # tests for digit, OR variable N
         if (DigitSearch):
             EquationString = re.sub(r"^(\d+|P)", "", EquationString)
@@ -44,8 +34,6 @@ def InfixToPostfix(EquationString):
                 Q.append(DigitSearch.group(1))
             else:
                 Q.append(int(DigitSearch.group(1)))
-            if (DEBUGMODEON and DEBUGPOSTFIX):
-                print("Enqueing {}".format(DigitSearch.group(1)))
             continue
         OperatorSearch = re.search(r"^([\+\*-\/\^%])", EquationString)
         if (OperatorSearch):
@@ -65,14 +53,11 @@ def InfixToPostfix(EquationString):
                     Q.append(Stk.pop())
                 Stk.pop()  # ditch the left paren
             continue
+        #if you want to implement additional mathmatical functionality, this is the spot to start including it. Otherwise, this is an invalid infix equation.
         raise Exception("Not a valid infix equation. {0}".format(EquationString))  # If we reach this line, something has probably gone wrong. http://www.youtube.com/watch?v=Q5cEAhjcv54
     while len(Stk) > 0:
         Q.append(Stk.pop())
-    if (DEBUGMODEON and DEBUGPOSTFIX):
-        print(Q)
     return Q
-
-DEBUGRPN = False
 
 def ParseRPN(RpnArr, PValue):
     RpnArr = list(RpnArr)  # we need a deep copy. If we don't we'll override P and it'll stay that way through the duration of our encryption.
@@ -102,25 +87,15 @@ def ParseRPN(RpnArr, PValue):
                 ParseStk.append(A ** B)  # This MUST be in reverse order to perform correctly
     return ParseStk[0]
 
-DEBUGCAESAR = False
-
 def CaesarCypher(message, infix):
     message = message.upper()
     CypherText = ""
     PostFix = InfixToPostfix(infix)
-    if (DEBUGMODEON and DEBUGCAESAR):
-        print(PostFix)
     for i in range(0, len(message)):
         if (message[i] in Alphabet):
             index = Alphabet.index(message[i])
-            if (DEBUGMODEON and DEBUGCAESAR):
-                print("message[{0}] = {1}".format(i, message[i]))
             newIndex = ParseRPN(PostFix, index)
-            if (DEBUGMODEON and DEBUGCAESAR):
-                print(newIndex)
             CypherText += Alphabet[newIndex]
-            if (DEBUGMODEON and DEBUGCAESAR):
-                print("Alphabet[{0}] = {1}".format(newIndex, Alphabet[newIndex]))
         else:
             CypherText += message[i]  # If the character isn't part of our cypher, like a punctuation mark or a space, we'll just ignore it.
     return CypherText
