@@ -34,11 +34,28 @@ def InfixToPostfix(EquationString):
         pass
     return [Q, Stk]
 
-def ParseRPN(RPN, NValue):
+def ParseRPN(RpnArr, NValue):
     ParseStk = []
-    for i in range(0, len(RPN)):
-        
-    return
+    for i in range(0, len(RpnArr)):
+        if (RpnArr[i] == "N"):
+            RpnArr[i] = NValue #make the mathmatical subsititution here so we can correctly evaluate this equation.
+        if (isinstance(RpnArr[i], int)):
+            ParseStk.append(RpnArr[i])
+        else:
+            if (RpnArr[i] == "+"):
+                ParseStk.append(ParseStk.pop() + ParseStk.pop())
+            elif (RpnArr[i] == "-"):
+                ParseStk.append(ParseStk.pop() - ParseStk.pop())
+            elif (RpnArr[i] == "*"):
+                ParseStk.append(ParseStk.pop() * ParseStk.pop())
+            elif (RpnArr[i] == "/"):
+                ParseStk.append(ParseStk.pop() / ParseStk.pop())
+    return ParseStk[0]
 
-print(infixToPostfix("5 + 4"))
-print(infixToPostfix("5 + 4 - 3"))
+eqn = "5 + 4 - 3"
+rpn = InfixToPostfix(eqn)
+#print(rpn)
+rpn = rpn[0] + rpn[1]
+#print(rpn)
+rslt = ParseRPN(rpn, 0)
+print(rslt) 
