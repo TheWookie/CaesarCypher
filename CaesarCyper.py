@@ -13,18 +13,14 @@ Operators = {  # Setup Opperators and their priorities. P-lease E-xcuse M-y D-ea
              "/" : 1,
              "%" : 1,
              "^" : 2,
-             "(" : 3,
-             ")" : 3 #Both paren same priority? Is this right? We'll see...
 }
 
 def InfixToPostfix(EquationString):
     EquationString = EquationString.upper()
     # EquationString = re.sub("N", NValue, EquationString) #replace the variable with the actual N value.
     EquationString = re.sub("(\s+)", "", EquationString)  # removing unnecessary spaces.
-    
     Q = []
     Stk = []
-    
     # ^(\d+) #Number at begging of string regex
     # ^([\+\*-\/\^%]) #Opperator at beggining of string regex
     # ^([\(\)]) #matchs oppening and closing paren.
@@ -47,9 +43,17 @@ def InfixToPostfix(EquationString):
             continue
         ParenSearch = re.search(r"^([\(\)])")
         if (ParenSearch):
-            pass
-        # If we reach this line, something has probably gone wrong.
-    return [Q, Stk]
+            if (ParenSearch.group(1) == "("):
+                Stk.append(ParenSearch.group(1))
+                continue
+            else:  # right paren
+                while not Stk[len(Stk) - 1] == "(":
+                    Q.append(Stk.pop())
+                Stk.pop()  # ditch the left paren
+        # If we reach this line, something has probably gone wrong. http://www.youtube.com/watch?v=Q5cEAhjcv54
+    while len(Stk) > 0:
+        Q.append(Stk.pop())
+    return Q
 
 def ParseRPN(RpnArr, NValue):
     ParseStk = []
@@ -71,18 +75,16 @@ def ParseRPN(RpnArr, NValue):
             elif (RpnArr[i] == "*"):  # See immediately previous note.
                 ParseStk.append(B * A)
             elif (RpnArr[i] == "/"):
-                ParseStk.append(B / A)
+                ParseStk.append(B / A)  # not forcing integer division for now.
             elif (RpnArr[i] == "%"):
                 ParseStk.append(B % A)
             elif (RpnArr[i] == "^"):
                 ParseStk.append(A ** B)  # This MUST be in reverse order to perform correctly
     return ParseStk[0]
 
-# eqn = "5 + 4 - 3"
-# rpn = InfixToPostfix(eqn)
-# print(rpn)
-# rpn = rpn[0] + rpn[1]
-# print(rpn)
-rpn = [9, "N", 7, 3, "-", "/", "+"]
+eqn = "9 + N / ( 7 - 3 )"
+# rpn = [9, "N", 7, 3, "-", "/", "+"]
+rpn = InfixToPostfix(eqn)
+print (rpn)
 rslt = ParseRPN(rpn, 24)
 print(rslt)  # the answer should be 15.
