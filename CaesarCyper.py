@@ -13,6 +13,8 @@ Operators = {  # Setup Opperators and their priorities. P-lease E-xcuse M-y D-ea
              "/" : 1,
              "%" : 1,
              "^" : 2,
+             "(" : 3, #Turns out we definitely need paren here for comparisons against operators.
+             ")" : 3 
 }
 
 def InfixToPostfix(EquationString):
@@ -27,30 +29,41 @@ def InfixToPostfix(EquationString):
     while len(EquationString) > 0:
         DigitSearch = re.search(r"^(\d+|N)", EquationString)  # tests for digit, OR variable N
         if (DigitSearch):
-            EquationString = re.sub(r"^(\d+)", "", EquationString)
+            EquationString = re.sub(r"^(\d+|N)", "", EquationString)
             if DigitSearch.group(1) == "N":
                 Q.append(DigitSearch.group(1))
+                print("Appending N to Q.")
             else:
+                print("Appending {} to Q.".format(DigitSearch.group(1)))
                 Q.append(int(DigitSearch.group(1)))
             continue
         OperatorSearch = re.search(r"^([\+\*-\/\^])", EquationString)
         if (OperatorSearch):
             EquationString = re.sub(r"^([\+\*-\/\^])", "", EquationString)
             op = OperatorSearch.group(1)
-            while (not len(Stk) == 0 and Operators[Stk[len(Stk) - 1]] >= Operators[op]):
+            while (len(Stk) > 0 and Operators[op] >= Operators[Stk[len(Stk) - 1]]):
+                print("Comparing operators {0} and {1}".format(Stk[len(Stk) - 1], op))
+                print("Poping {0} from Stack and appending to Q.".format(Stk[len(Stk) - 1]))
                 Q.append(Stk.pop())
+            print("Pushing operator {0} to stack.".format(op))
             Stk.append(op)
             continue
-        ParenSearch = re.search(r"^([\(\)])")
+        ParenSearch = re.search(r"^([\(\)])", EquationString)
         if (ParenSearch):
+            EquationString = re.sub(r"^([\(\)])", "", EquationString)
             if (ParenSearch.group(1) == "("):
                 Stk.append(ParenSearch.group(1))
+                print("Pushing ( to stack")
                 continue
             else:  # right paren
+                print("We have a )")
                 while not Stk[len(Stk) - 1] == "(":
+                    print("Popping {0} from stack and appending to q.".format(Stk[len(Stk) - 1]))
                     Q.append(Stk.pop())
+                print("Popping and ditching {0}, because we don't need it anymore.".format(Stk[len(Stk) - 1]))
                 Stk.pop()  # ditch the left paren
-        # If we reach this line, something has probably gone wrong. http://www.youtube.com/watch?v=Q5cEAhjcv54
+                continue
+        print("How did I even get here??")# If we reach this line, something has probably gone wrong. http://www.youtube.com/watch?v=Q5cEAhjcv54
     while len(Stk) > 0:
         Q.append(Stk.pop())
     return Q
