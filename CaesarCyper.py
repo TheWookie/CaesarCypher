@@ -39,7 +39,7 @@ def InfixToPostfix(EquationString):
             op = OperatorSearch.group(1)
             while (not len(Stk) == 0 and Operators[Stk[len(Stk) - 1]] >= Operators[op]):
                 Q.append(Stk.pop())
-            Stk.append()
+            Stk.append(op)
             continue
         ParenSearch = re.search(r"^([\(\)])")
         if (ParenSearch):
